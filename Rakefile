@@ -6,17 +6,17 @@ require 'rubygems'
 require 'yard'
 require 'rspec/core/rake_task'
 
-require "mqtt/version"
+require "em-mqtt/version"
 
 namespace :gem do
-  desc "Build the mqtt-#{MQTT::VERSION}.gem file"
+  desc "Build the em-mqtt-#{EventMachine::MQTT::VERSION}.gem file"
   task :build do
-    sh "gem build mqtt.gemspec"
+    sh "gem build em-mqtt.gemspec"
   end
 
-  desc "Release the mqtt-#{MQTT::VERSION}.gem file"
+  desc "Release the em-mqtt-#{EventMachine::MQTT::VERSION}.gem file"
   task :release do
-    sh "gem push mqtt-#{MQTT::VERSION}.gem"
+    sh "gem push em-mqtt-#{MQTT::VERSION}.gem"
   end
 end
 
