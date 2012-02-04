@@ -1,5 +1,5 @@
 
-class MQTT::Connection < EventMachine::Connection
+class EventMachine::MQTT::Connection < EventMachine::Connection
 
   attr_reader :state
   attr_reader :last_sent
@@ -38,11 +38,11 @@ class MQTT::Connection < EventMachine::Connection
       @packet = nil
     end
   end
-  
+
   # The function needs to be sub-classed
-  def process_packet
+  def process_packet(packet)
   end
-  
+
   def send_packet(packet)
     # FIXME: Throw exception if we aren't connected?
     #unless packet.class == MQTT::Packet::Connect

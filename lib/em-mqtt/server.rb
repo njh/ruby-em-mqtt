@@ -1,7 +1,6 @@
-require 'logger'
 require 'optparse'
 
-class MQTT::Server
+class EventMachine::MQTT::Server
   attr_accessor :address
   attr_accessor :port
   attr_accessor :logger
@@ -55,7 +54,7 @@ class MQTT::Server
       Signal.trap("TERM") { EventMachine.stop }
 
       logger.info("Starting MQTT server on #{address}:#{port}")
-      EventMachine.start_server(address, port, MQTT::ServerConnection, logger)
+      EventMachine.start_server(address, port, EventMachine::MQTT::ServerConnection, logger)
     end
   end
 

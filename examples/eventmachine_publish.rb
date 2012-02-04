@@ -3,11 +3,12 @@
 $:.unshift File.dirname(__FILE__)+'/../lib'
 
 require 'rubygems'
-require 'mqtt'
+require 'em-mqtt'
 
+include EventMachine::MQTT
 
 EventMachine.run do
-  c = MQTT::ClientConnection.connect('localhost')
+  c = ClientConnection.connect('test.mosquitto.org')
   EventMachine::PeriodicTimer.new(1.0) do
     puts "-- Publishing time"
     c.publish('test', "The time is #{Time.now}")

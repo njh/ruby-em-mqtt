@@ -17,7 +17,7 @@ class MQTT::Client
     @ack_timeout = 5
     @connection = nil
   end
-  
+
   def self.connect(*args, &blk)
     self.new(*args).connect(&blk)
   end
@@ -26,18 +26,18 @@ class MQTT::Client
   # A block must be given
   def connect
     #trap("INT") {EM.stop}
-  
+
     EventMachine.run do
       @connection = MQTT::ClientConnection.connect(@remote_host, @remote_port)
-      
+
       # Stuff happens here
       yield(self)
-      
+
       # Disconnect once all the other deferred callbacks
       @connection.callback do
         disconnect
       end
-      
+
       puts "Finished initing run"
     end
   end

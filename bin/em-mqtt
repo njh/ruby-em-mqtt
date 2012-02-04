@@ -3,5 +3,6 @@
 $:.unshift File.dirname(__FILE__)+'/../lib'
 
 require 'rubygems'
-require 'mqtt'
-MQTT::Server.new(ARGV).run
+require 'em-mqtt'
+
+EventMachine::MQTT::Server.new(ARGV).run

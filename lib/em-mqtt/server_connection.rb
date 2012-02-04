@@ -1,5 +1,5 @@
 
-class MQTT::ServerConnection < MQTT::Connection
+class EventMachine::MQTT::ServerConnection < EventMachine::MQTT::Connection
 
   @@clients = Array.new
 
@@ -24,11 +24,13 @@ class MQTT::ServerConnection < MQTT::Connection
     @message_id = 0
     @subscriptions = []
     @timer = nil
+    logger.debug("TCP connection opened")
   end
 
   def unbind
     @@clients.delete(self)
     @timer.cancel if @timer
+    logger.debug("TCP connection closed")
   end
 
   def process_packet(packet)
@@ -59,6 +61,7 @@ class MQTT::ServerConnection < MQTT::Connection
     # FIXME: check the client id is between 1 and 23 charcters
     self.client_id = packet.client_id
 
+    ## FIXME: disconnect old client with the same ID
     send_packet MQTT::Packet::Connack.new
     @state = :connected
     @@clients << self
@@ -79,6 +82,7 @@ class MQTT::ServerConnection < MQTT::Connection
   end
 
   def disconnect
+    logger.debug("Closing connection to #{client_id}")
     @state = :disconnected
     close_connection
   end

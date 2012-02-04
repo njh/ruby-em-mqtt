@@ -1,5 +1,5 @@
 
-class MQTT::ClientConnection < MQTT::Connection
+class EventMachine::MQTT::ClientConnection < EventMachine::MQTT::Connection
   include EventMachine::Deferrable
 
   attr_reader :client_id
@@ -10,14 +10,14 @@ class MQTT::ClientConnection < MQTT::Connection
   attr_reader :timer
 
   # FIXME: change this to optionally take hash of options
-  def self.connect(host='localhost', port=1883, *args, &blk)
+  def self.connect(host=MQTT::DEFAULT_HOST, port=MQTT::DEFAULT_PORT, *args, &blk)
     EventMachine.connect( host, port, self, *args, &blk )
   end
 
   def post_init
     super
     @state = :connecting
-    @client_id = random_letters(16)
+    @client_id = MQTT::Client.generate_client_id
     @keep_alive = 10
     @clean_start = true
     @message_id = 0
@@ -38,23 +38,10 @@ class MQTT::ClientConnection < MQTT::Connection
     @state = :connect_sent
   end
 
-  # Publish a message on a particular topic to the MQTT broker.
-  def publish(topic, payload, retain=false, qos=0)
-    packet = MQTT::Packet::Publish.new(
-      :qos => qos,
-      :retain => retain,
-      :topic => topic,
-      :payload => payload,
-      :message_id => @message_id.next
-    )
-
-    # Send the packet
-    send_packet(packet)
-  end
-
   # Disconnect from the MQTT broker.
   # If you don't want to say goodbye to the broker, set send_msg to false.
   def disconnect(send_msg=true)
+    # FIXME: only close if we aren't waiting for any acknowledgements
     if connected?
       send_packet(MQTT::Packet::Disconnect.new) if send_msg
     end
@@ -62,6 +49,7 @@ class MQTT::ClientConnection < MQTT::Connection
   end
 
   def receive_msg(message)
+    # Subclass this method
   end
 
   def unbind
@@ -125,6 +113,8 @@ private
       # Pong!
     elsif state == :connected and packet.class == MQTT::Packet::Publish
       receive_msg(packet)
+    elsif state == :connected and packet.class == MQTT::Packet::Suback
+      # Subscribed!
     else
       # FIXME: deal with other packet types
       raise MQTT::ProtocolException.new(
@@ -133,38 +123,23 @@ private
       disconnect
     end
   end
-  
+
   def connect_ack(packet)
     if packet.return_code != 0x00
       raise MQTT::ProtocolException.new(packet.return_msg)
     else
       @state = :connected
     end
-    
+
     # Send a ping packet every X seconds
-    @timer = EventMachine::PeriodicTimer.new(keep_alive) do
-      send_packet MQTT::Packet::Pingreq.new
+    if keep_alive > 0
+      @timer = EventMachine::PeriodicTimer.new(keep_alive) do
+        send_packet MQTT::Packet::Pingreq.new
+      end
     end
-    
+
     # We are now connected - can now execute deferred calls
     set_deferred_success
-  end
-
-  # Generate a string of random letters (0-9,a-z)
-  def random_letters(count)
-    str = ''
-    count.times do
-      num = rand(36)
-      if (num<10)
-        # Number
-        num += 48
-      else
-        # Letter
-        num += 87
-      end
-      str += num.chr
-    end
-    return str
   end
 
 end

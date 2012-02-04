@@ -3,10 +3,10 @@
 $:.unshift File.dirname(__FILE__)+'/../lib'
 
 require 'rubygems'
-require 'mqtt'
+require 'em-mqtt'
 
 
-class MyConnection < MQTT::ClientConnection
+class MyConnection < EventMachine::MQTT::ClientConnection
 
   def receive_msg(packet)
     p packet
@@ -16,7 +16,7 @@ end
 
 
 EventMachine.run do
-  MyConnection.connect('localhost') do |c|
+  MyConnection.connect('test.mosquitto.org') do |c|
     c.subscribe('test')
   end
 end
