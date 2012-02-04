@@ -1,62 +1,56 @@
-ruby-mqtt
-=========
+ruby-em-mqtt
+============
 
-Pure Ruby gem that implements the MQTT (Message Queue Telemetry Transport) protocol, a lightweight protocol for publish/subscribe messaging.
+This gem adds MQTT (Message Queue Telemetry Transport) protocol support to EventMachine,
+an event-processing library for Ruby.
 
 
 Installing
 ----------
 
-You may get the latest stable version from Rubyforge. Source gems are also available.
+You may get the latest stable version from rubygems.org:
 
-    $ gem install mqtt
+    $ gem install em-mqtt
+    
+It depends upon the mqtt gem to perform packet parsing and serialising.
+
 
 Synopsis
 --------
 
     require 'rubygems'
-    require 'mqtt'
+    require 'em-mqtt'
     
     # Publish example
-    mqtt = MQTT::Client.new('mqtt.example.com')
-    mqtt.connect do |c|
-      c.publish('topic','message')
-    end
-    
-    # Subscribe example
-    mqtt = MQTT::Client.new('mqtt.example.com')
-    client.connect do
-      client.subscribe('test')
-      loop do
-        topic,message = client.get
-        puts "#{topic}: #{message}"
+    EventMachine.run do
+      c = ClientConnection.connect('test.mosquitto.org')
+      EventMachine::PeriodicTimer.new(1.0) do
+        puts "-- Publishing time"
+        c.publish('test', "The time is #{Time.now}")
       end
     end
 
-
-TODO
-----
-
-* Implement Will and Testament
-* Process acknowledgement packets / Implement QOS 1 in client
-* More validations of data/parameters
-* More error checking and exception throwing
-  - Check that packet data is valid - don't blindly read values
-  - Subscribe and Unsubscribe packets should always have QOS of 1
-* More examples
-* Integration tests
-* Refactor to add callbacks that are called from seperate thread
-* Implement QOS Level 2 in client
-* Prevent proxy from connecting to itself
-* Add support for binding socket to specific local address
+    
+    # Subscribe example
+    class MyConnection < EventMachine::MQTT::ClientConnection
+      def receive_msg(packet)
+        p packet
+      end
+    end
+    
+    EventMachine.run do
+      MyConnection.connect('test.mosquitto.org') do |c|
+        c.subscribe('test')
+      end
+    end
 
 
 Resources
 ---------
 
 * MQTT Homepage: http://www.mqtt.org/
-* GitHub Project: http://github.com/njh/ruby-mqtt
-* Documentation: http://rdoc.info/github/njh/ruby-mqtt/master/frames
+* GitHub Project: http://github.com/njh/ruby-em-mqtt
+* Documentation: http://rubydoc.info/gems/em-mqtt/frames
 
 
 Contact
