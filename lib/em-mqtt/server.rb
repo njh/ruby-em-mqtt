@@ -39,7 +39,7 @@ class EventMachine::MQTT::Server
       end
 
       opts.on_tail("--version", "show version") do
-        puts MQTT::VERSION
+        puts EventMachine::MQTT::VERSION
         exit
       end
 

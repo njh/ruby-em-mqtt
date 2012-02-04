@@ -16,7 +16,7 @@ namespace :gem do
 
   desc "Release the em-mqtt-#{EventMachine::MQTT::VERSION}.gem file"
   task :release do
-    sh "gem push em-mqtt-#{MQTT::VERSION}.gem"
+    sh "gem push em-mqtt-#{EventMachine::MQTT::VERSION}.gem"
   end
 end
 
