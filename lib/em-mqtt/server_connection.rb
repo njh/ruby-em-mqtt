@@ -96,7 +96,8 @@ class EventMachine::MQTT::ServerConnection < EventMachine::MQTT::Connection
       self.subscriptions << topic
     end
     logger.info("#{client_id} has subscriptions: #{self.subscriptions}")
-    # FIXME: send subscribe acknowledgement?
+
+    # FIXME: send subscribe acknowledgement
   end
 
   def publish(packet)

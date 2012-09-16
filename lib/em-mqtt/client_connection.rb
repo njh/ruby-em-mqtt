@@ -48,8 +48,13 @@ class EventMachine::MQTT::ClientConnection < EventMachine::MQTT::Connection
     @state = :disconnecting
   end
 
-  def receive_msg(message)
-    # Subclass this method
+  def receive_callback(&block)
+    @receive_callback = block
+  end
+
+  def receive_msg(packet)
+    # Alternatively, subclass this method
+    @receive_callback.call(packet) unless @receive_callback.nil?
   end
 
   def unbind
