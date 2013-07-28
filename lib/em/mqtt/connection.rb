@@ -36,6 +36,7 @@ class EventMachine::MQTT::Connection < EventMachine::Connection
       @last_received = Time.now
       process_packet(@packet)
       @packet = nil
+      receive_data ''
     end
   end
 
