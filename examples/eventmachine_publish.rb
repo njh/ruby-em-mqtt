@@ -3,7 +3,7 @@
 $:.unshift File.dirname(__FILE__)+'/../lib'
 
 require 'rubygems'
-require 'em-mqtt'
+require 'em/mqtt'
 
 include EventMachine::MQTT
 
