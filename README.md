@@ -19,7 +19,7 @@ Synopsis
 --------
 
     require 'rubygems'
-    require 'em-mqtt'
+    require 'em/mqtt'
     
     # Publish example
     EventMachine.run do
