@@ -3,7 +3,7 @@
 $:.unshift File.dirname(__FILE__)+'/../lib'
 
 require 'rubygems'
-require 'em-mqtt'
+require 'em/mqtt'
 
 EventMachine.run do
   EventMachine::MQTT::ClientConnection.connect('test.mosquitto.org') do |c|
