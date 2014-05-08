@@ -4,7 +4,7 @@ class EventMachine::MQTT::ClientConnection < EventMachine::MQTT::Connection
 
   attr_reader :client_id
   attr_reader :keep_alive
-  attr_reader :clean_start
+  attr_reader :clean_session
   attr_reader :message_id
   attr_reader :ack_timeout
   attr_reader :timer
@@ -19,7 +19,7 @@ class EventMachine::MQTT::ClientConnection < EventMachine::MQTT::Connection
     @state = :connecting
     @client_id = MQTT::Client.generate_client_id
     @keep_alive = 10
-    @clean_start = true
+    @clean_session = true
     @message_id = 0
     @ack_timeout = 5
     @timer = nil
@@ -28,7 +28,7 @@ class EventMachine::MQTT::ClientConnection < EventMachine::MQTT::Connection
   def connection_completed
     # Protocol name and version
     packet = MQTT::Packet::Connect.new(
-      :clean_start => @clean_start,
+      :clean_session => @clean_session,
       :keep_alive => @keep_alive,
       :client_id => @client_id
     )
