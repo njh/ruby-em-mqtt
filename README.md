@@ -51,7 +51,7 @@ Resources
 License
 -------
 
-The ruby-mqtt gem is licensed under the terms of the MIT license.
+The em-mqtt gem is licensed under the terms of the MIT license.
 See the file LICENSE for details.
 
 
