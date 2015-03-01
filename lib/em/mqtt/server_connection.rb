@@ -6,7 +6,7 @@ class EventMachine::MQTT::ServerConnection < EventMachine::MQTT::Connection
   attr_accessor :client_id
   attr_accessor :last_packet
   attr_accessor :keep_alive
-  attr_accessor :message_id
+  attr_accessor :packet_id
   attr_accessor :subscriptions
 
   attr_reader :timer
@@ -21,7 +21,7 @@ class EventMachine::MQTT::ServerConnection < EventMachine::MQTT::Connection
     @state = :wait_connect
     @client_id = nil
     @keep_alive = 0
-    @message_id = 0
+    @packet_id = 0
     @subscriptions = []
     @timer = nil
     logger.debug("TCP connection opened")
