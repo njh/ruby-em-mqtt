@@ -5,7 +5,7 @@ class EventMachine::MQTT::ClientConnection < EventMachine::MQTT::Connection
   attr_reader :client_id
   attr_reader :keep_alive
   attr_reader :clean_session
-  attr_reader :message_id
+  attr_reader :packet_id
   attr_reader :ack_timeout
   attr_reader :timer
 
@@ -20,7 +20,7 @@ class EventMachine::MQTT::ClientConnection < EventMachine::MQTT::Connection
     @client_id = MQTT::Client.generate_client_id
     @keep_alive = 10
     @clean_session = true
-    @message_id = 0
+    @packet_id = 0
     @ack_timeout = 5
     @timer = nil
   end
@@ -75,7 +75,7 @@ class EventMachine::MQTT::ClientConnection < EventMachine::MQTT::Connection
           :retain => retain,
           :topic => topic,
           :payload => payload,
-          :message_id => @message_id.next
+          :packet_id => next_packet_id
         )
       )
     end
@@ -88,7 +88,7 @@ class EventMachine::MQTT::ClientConnection < EventMachine::MQTT::Connection
       send_packet(
         MQTT::Packet::Subscribe.new(
           :topics => topics,
-          :message_id => @message_id.next
+          :packet_id => next_packet_id
         )
       )
     end
@@ -101,7 +101,7 @@ class EventMachine::MQTT::ClientConnection < EventMachine::MQTT::Connection
       send_packet(
         MQTT::Packet::Unsubscribe.new(
           :topics => topics,
-          :message_id => @message_id.next
+          :packet_id => next_packet_id
         )
       )
     end
@@ -145,6 +145,10 @@ private
 
     # We are now connected - can now execute deferred calls
     set_deferred_success
+  end
+
+  def next_packet_id
+    @packet_id += 1
   end
 
 end
