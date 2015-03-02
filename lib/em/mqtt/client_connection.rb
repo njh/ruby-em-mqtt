@@ -5,32 +5,78 @@ class EventMachine::MQTT::ClientConnection < EventMachine::MQTT::Connection
   attr_reader :client_id
   attr_reader :keep_alive
   attr_reader :clean_session
+  attr_reader :username
+  attr_reader :password
   attr_reader :packet_id
   attr_reader :ack_timeout
   attr_reader :timer
 
-  # FIXME: change this to optionally take hash of options
-  def self.connect(host=MQTT::DEFAULT_HOST, port=MQTT::DEFAULT_PORT, *args, &blk)
-    EventMachine.connect( host, port, self, *args, &blk )
+  # Connect to an MQTT server
+  #
+  # Examples:
+  #  ClientConnection.connect('localhost', 1883)
+  #  ClientConnection.connect(:host => 'localhost', :username => 'user', :password => 'pass')
+  #
+  def self.connect(*args, &blk)
+    hash = {
+      :host => 'localhost',
+      :port => MQTT::DEFAULT_PORT
+    }
+
+    i = 0
+    args.each do |arg|
+      if arg.is_a?(Hash)
+        hash.merge!(arg)
+      else
+        if i == 0
+          hash[:host] = arg
+        elsif i == 1
+          hash[:port] = arg
+        end
+        i += 1
+      end
+    end
+
+    ::EventMachine.connect( hash.delete(:host), hash.delete(:port), self, hash, &blk )
   end
 
-  def post_init
-    super
-    @state = :connecting
+  # Initialize connection
+  # @param args [Hash] Arguments for connection
+  # @option args [String] :client_id A unique identifier for this client
+  # @option args [Integer] :keep_alive How often to send keep-alive pings (in seconds)
+  # @option args [Boolean] :clean_session Start a clean session with server or resume old one (default true)
+  # @option args [String] :username Username to authenticate with the server
+  # @option args [String] :password Password to authenticate with the server
+  def initialize(args={})
     @client_id = MQTT::Client.generate_client_id
     @keep_alive = 10
     @clean_session = true
     @packet_id = 0
     @ack_timeout = 5
+    @username = nil
+    @password = nil
     @timer = nil
+
+    if args.is_a?(Hash)
+      args.each_pair do |k,v|
+        instance_variable_set("@#{k}", v)
+      end
+    end
+  end
+
+  def post_init
+    super
+    @state = :connecting
   end
 
   def connection_completed
-    # Protocol name and version
+    # TCP socket established: send Connect packet
     packet = MQTT::Packet::Connect.new(
+      :client_id => @client_id,
       :clean_session => @clean_session,
       :keep_alive => @keep_alive,
-      :client_id => @client_id
+      :username => @username,
+      :password => @password
     )
 
     send_packet(packet)
