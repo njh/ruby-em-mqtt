@@ -7,6 +7,8 @@ require 'em/mqtt'
 
 include EventMachine::MQTT
 
+EventMachine::error_handler { |e| puts "#{e}: #{e.backtrace.first}" }
+
 EventMachine.run do
   c = ClientConnection.connect('test.mosquitto.org')
   EventMachine::PeriodicTimer.new(1.0) do
