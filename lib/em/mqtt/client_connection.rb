@@ -71,11 +71,11 @@ class EventMachine::MQTT::ClientConnection < EventMachine::MQTT::Connection
     callback do
       send_packet(
         MQTT::Packet::Publish.new(
+          :id => next_packet_id,
           :qos => qos,
           :retain => retain,
           :topic => topic,
-          :payload => payload,
-          :packet_id => next_packet_id
+          :payload => payload
         )
       )
     end
@@ -87,8 +87,8 @@ class EventMachine::MQTT::ClientConnection < EventMachine::MQTT::Connection
     callback do
       send_packet(
         MQTT::Packet::Subscribe.new(
-          :topics => topics,
-          :packet_id => next_packet_id
+          :id => next_packet_id,
+          :topics => topics
         )
       )
     end
@@ -100,8 +100,8 @@ class EventMachine::MQTT::ClientConnection < EventMachine::MQTT::Connection
     callback do
       send_packet(
         MQTT::Packet::Unsubscribe.new(
-          :topics => topics,
-          :packet_id => next_packet_id
+          :id => next_packet_id,
+          :topics => topics
         )
       )
     end
