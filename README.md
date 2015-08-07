@@ -11,7 +11,7 @@ Installing
 You may get the latest stable version from rubygems.org:
 
     $ gem install em-mqtt
-    
+
 It depends upon the mqtt gem to perform packet parsing and serialising.
 
 
@@ -20,7 +20,7 @@ Synopsis
 
     require 'rubygems'
     require 'em/mqtt'
-    
+
     # Publish example
     EventMachine.run do
       c = ClientConnection.connect('test.mosquitto.org')
