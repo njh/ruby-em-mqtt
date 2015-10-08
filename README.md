@@ -23,7 +23,7 @@ Synopsis
 
     # Publish example
     EventMachine.run do
-      c = ClientConnection.connect('test.mosquitto.org')
+      c = EventMachine::MQTT::ClientConnection.connect('test.mosquitto.org')
       EventMachine::PeriodicTimer.new(1.0) do
         puts "-- Publishing time"
         c.publish('test', "The time is #{Time.now}")
