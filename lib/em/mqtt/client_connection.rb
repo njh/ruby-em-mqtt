@@ -106,7 +106,8 @@ class EventMachine::MQTT::ClientConnection < EventMachine::MQTT::Connection
   def unbind
     timer.cancel if timer
     unless state == :disconnecting
-      raise MQTT::NotConnectedException.new("Connection to server lost")
+      # Re-throw any exceptions (if present) to avoid swallowed errors.
+      raise $! || MQTT::NotConnectedException.new("Connection to server lost")
     end
     @state = :disconnected
   end
