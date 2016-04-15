@@ -18,28 +18,29 @@ It depends upon the mqtt gem to perform packet parsing and serialising.
 Synopsis
 --------
 
-    require 'rubygems'
-    require 'em/mqtt'
+```ruby
+require 'rubygems'
+require 'em/mqtt'
 
-    # Publish example
-    EventMachine.run do
-      c = EventMachine::MQTT::ClientConnection.connect('test.mosquitto.org')
-      EventMachine::PeriodicTimer.new(1.0) do
-        puts "-- Publishing time"
-        c.publish('test', "The time is #{Time.now}")
-      end
+# Publish example
+EventMachine.run do
+  c = EventMachine::MQTT::ClientConnection.connect('test.mosquitto.org')
+  EventMachine::PeriodicTimer.new(1.0) do
+    puts "-- Publishing time"
+    c.publish('test', "The time is #{Time.now}")
+  end
+end
+
+# Subscribe example
+EventMachine.run do
+  EventMachine::MQTT::ClientConnection.connect('test.mosquitto.org') do |c|
+    c.subscribe('test')
+    c.receive_callback do |message|
+      p message
     end
-
-    # Subscribe example
-    EventMachine.run do
-      EventMachine::MQTT::ClientConnection.connect('test.mosquitto.org') do |c|
-        c.subscribe('test')
-        c.receive_callback do |message|
-          p message
-        end
-      end
-    end
-
+  end
+end
+```
 
 Resources
 ---------
