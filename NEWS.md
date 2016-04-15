@@ -1,6 +1,10 @@
 EventMachine MQTT NEWS
 ======================
 
+EventMachine MQTT Version 0.0.5 (2016-04-15)
+--------------------------------------------
+
+* Prevent errors from getting swallowed inside of EM
 
 EventMachine MQTT Version 0.0.4 (2015-08-07)
 --------------------------------------------
